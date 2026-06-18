@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Building a keyboard macro pad</title>
+  <style>body { font-family: serif; }</style>
+</head>
+<body>
+  <h1>Building a keyboard macro pad</h1>
+  <p>Today I finally finished my macro pad build. The hardware was easy,
+  but the firmware was really annoying.</p>
+  <p>The first test failed with an error: the third column was dead.
+  I spent an hour debugging before I found a broken solder joint.</p>
+  <p>For the firmware I used <a href="https://qmk.fm">QMK</a>, which is a
+  great framework. You just edit a config file and compile:</p>
+  <pre><code>qmk compile -kb mypad -km default
+qmk flash</code></pre>
+  <p>The <code>keymap.c</code> file holds the layout. I committed
+  everything to my repo so I have a backup.</p>
+  <script>console.log("my computer code stays untouched");</script>
+</body>
+</html>

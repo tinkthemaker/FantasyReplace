@@ -1,0 +1,820 @@
+{
+  "_comment": "v2 format. Keys are LEMMAS (dictionary forms) - the engine matches every inflection automatically (crash matches crashes/crashed/crashing) and inflects the replacement to fit. A value can be a plain string (used for any part of speech) or an object with 'noun'/'verb'/'adjective'/'adverb' senses. Multi-word keys are matched literally. In replacement phrases the engine inflects the first word of verb phrases and the head noun (before 'of', else last word) of noun phrases. 'phrases' entries use * as an object slot. tier1 = always, tier2 = intensity 2+, tier3 = intensity 3.",
+  "tier1": {
+    "computer": "thinking engine",
+    "laptop": "portable thinking engine",
+    "server": "summoning altar",
+    "database": "great tome of records",
+    "code": "incantations",
+    "codebase": "grimoire",
+    "repository": "grimoire vault",
+    "repo": "grimoire vault",
+    "bug": "curse",
+    "debug": {
+      "verb": "curse-lift",
+      "noun": "curse-lifting"
+    },
+    "error": "dark omen",
+    "compile": {
+      "verb": "transmute"
+    },
+    "compiler": "transmutation circle",
+    "script": "scroll",
+    "function": "spell",
+    "variable": "rune",
+    "api": "oracle",
+    "internet": "the great aether",
+    "network": "the aether",
+    "wifi": "invisible aether-threads",
+    "cloud": "sky realm",
+    "file": "parchment",
+    "folder": "satchel of parchments",
+    "password": "secret word of passage",
+    "keyboard": "rune-board",
+    "screen": "scrying glass",
+    "monitor": "scrying glass",
+    "mouse": "familiar",
+    "developer": "wizard",
+    "programmer": "wizard",
+    "engineer": "artificer",
+    "user": "common folk",
+    "install": {
+      "verb": "summon forth"
+    },
+    "download": {
+      "verb": "conjure down"
+    },
+    "upload": {
+      "verb": "cast up"
+    },
+    "delete": {
+      "verb": "banish"
+    },
+    "update": {
+      "verb": "re-enchant",
+      "noun": "fresh enchantment"
+    },
+    "software": "arcane workings",
+    "hardware": "artifice",
+    "algorithm": "ancient formula",
+    "data": "knowledge essence",
+    "backup": "protective ward",
+    "crash": {
+      "noun": "catastrophic unraveling",
+      "verb": "unravel"
+    },
+    "restart": {
+      "noun": "ritual rebirth",
+      "verb": "reawaken"
+    },
+    "reboot": {
+      "noun": "ritual rebirth",
+      "verb": "reawaken"
+    },
+    "terminal": "obsidian portal",
+    "command line": "tongue of the old ones",
+    "browser": "window to the aether",
+    "email": "raven post",
+    "blog": "public chronicle",
+    "website": "aetheric shrine",
+    "git": "the chronicle-keeper",
+    "commit": {
+      "verb": "inscribe",
+      "noun": "inscription"
+    },
+    "merge": {
+      "verb": "weave together"
+    },
+    "deploy": {
+      "verb": "unleash"
+    },
+    "test": {
+      "noun": "trial of truth",
+      "verb": "essay"
+    },
+    "library": "tome of borrowed spells",
+    "framework": "scaffold of eldritch design",
+    "plugin": "enchanted attachment",
+    "config": "binding pact",
+    "configuration": "binding pact",
+    "setting": "binding pact",
+    "log": {
+      "noun": "ledger of happenings",
+      "verb": "chronicle"
+    },
+    "build": {
+      "noun": "forging",
+      "verb": "forge"
+    },
+    "memory": "mind-crystal",
+    "ram": "mind-crystal",
+    "cpu": "beating heart of the engine",
+    "gpu": "vision-stone",
+    "battery": "lightning vessel",
+    "cable": "binding cord",
+    "solder": {
+      "verb": "fire-bind",
+      "noun": "fire-binding"
+    },
+    "3d printer": "matter-conjuring engine",
+    "printer": "scribe golem",
+    "firmware": "soul-script",
+    "driver": "spirit-binding",
+    "phone": "far-speaking stone",
+    "smartphone": "pocket oracle",
+    "tablet": "slate of visions",
+    "app": "minor enchantment",
+    "application": "minor enchantment",
+    "device": "contrivance",
+    "gadget": "trinket of power",
+    "menu": "scroll of choices",
+    "button": "sigil",
+    "icon": "glyph",
+    "cursor": "wisp",
+    "click": {
+      "verb": "strike"
+    },
+    "type": {
+      "verb": "scribe"
+    },
+    "scroll": {
+      "verb": "unfurl"
+    },
+    "copy": {
+      "verb": "transcribe",
+      "noun": "facsimile"
+    },
+    "paste": {
+      "verb": "affix"
+    },
+    "editor": "scriptorium",
+    "ide": "scriptorium",
+    "debugger": "curse-seeker",
+    "profiler": "soothsayer",
+    "benchmark": "trial of mettle",
+    "cache": "hoard",
+    "queue": "procession",
+    "stack": "tower",
+    "array": "phalanx",
+    "list": "litany",
+    "string": "thread of letters",
+    "integer": "counting rune",
+    "boolean": "truth rune",
+    "pointer": "divining rod",
+    "thread": "spirit-strand",
+    "process": {
+      "noun": "working"
+    },
+    "daemon": "bound spirit",
+    "kernel": "innermost sanctum",
+    "shell": "outer ward",
+    "version": "incarnation",
+    "release": {
+      "noun": "unveiling",
+      "verb": "unveil"
+    },
+    "patch": {
+      "noun": "mending",
+      "verb": "mend"
+    },
+    "feature": "boon",
+    "requirement": "decree",
+    "deadline": "day of reckoning",
+    "ticket": "petition",
+    "documentation": "codex",
+    "docs": "codex",
+    "manual": "codex",
+    "tutorial": "primer of the arts",
+    "video": "moving vision",
+    "photo": "captured vision",
+    "picture": "captured vision",
+    "image": "vision",
+    "camera": "eye of glass",
+    "robot": "golem",
+    "drone": "sky golem",
+    "machine": "contraption",
+    "model": "effigy",
+    "sensor": "seeing-stone",
+    "chip": "enchanted shard",
+    "circuit": "rune-path",
+    "wire": "copper thread",
+    "switch": {
+      "noun": "lever"
+    },
+    "lamp": "lantern",
+    "clock": "timekeeper",
+    "meeting": "council",
+    "manager": "steward",
+    "boss": "liege",
+    "client": "patron",
+    "customer": "patron",
+    "company": "guild",
+    "startup": "fledgling guild",
+    "office": "guildhall",
+    "team": "fellowship",
+    "project": "quest",
+    "task": "errand",
+    "job": "calling",
+    "salary": "stipend",
+    "career": "life's calling",
+    "doctor": "healer",
+    "nurse": "healer's aide",
+    "hospital": "house of healing",
+    "medicine": "physic",
+    "teacher": "sage",
+    "student": "apprentice",
+    "school": "academy",
+    "university": "great academy",
+    "lawyer": "advocate",
+    "court": "tribunal",
+    "police": "the watch",
+    "government": "the crown",
+    "country": "kingdom",
+    "city": "citadel",
+    "town": "burgh",
+    "world": "realm",
+    "house": "dwelling",
+    "home": "hearth",
+    "room": "chamber",
+    "kitchen": "cookery",
+    "bedroom": "sleeping chamber",
+    "garden": "grove",
+    "door": "gate",
+    "wall": "rampart",
+    "floor": "flagstones",
+    "stairs": "winding stair",
+    "table": "board",
+    "bed": "pallet",
+    "car": "carriage",
+    "truck": "great wagon",
+    "bus": "common carriage",
+    "train": "iron serpent",
+    "airplane": "sky ship",
+    "plane": "sky ship",
+    "bicycle": "iron steed",
+    "motorcycle": "thunder-steed",
+    "road": "way",
+    "street": "thoroughfare",
+    "shop": "merchant's stall",
+    "store": "merchant's stall",
+    "bank": "counting-house",
+    "money": "coin",
+    "cash": "coin of the realm",
+    "food": "victuals",
+    "meal": "repast",
+    "breakfast": "morning repast",
+    "lunch": "midday repast",
+    "dinner": "evening feast",
+    "coffee": "bitter brew",
+    "beer": "ale",
+    "snack": "morsel",
+    "storm": "tempest",
+    "morning": "morn",
+    "evening": "eventide",
+    "week": "sevennight",
+    "month": "moon's turn",
+    "year": "twelvemonth",
+    "friend": "companion",
+    "family": "kin",
+    "child": "youngling",
+    "kid": "youngling",
+    "parent": "elder",
+    "wife": "lady wife",
+    "husband": "lord husband",
+    "dog": "hound",
+    "cat": "mouser",
+    "horse": "steed",
+    "baby": "babe",
+    "book": "tome",
+    "newspaper": "crier's sheet",
+    "news": "tidings",
+    "letter": "missive",
+    "message": "missive",
+    "story": "tale",
+    "history": "annals",
+    "idea": "notion",
+    "plan": "stratagem",
+    "secret": {
+      "noun": "arcanum"
+    },
+    "science": "natural philosophy",
+    "mathematics": "the art of numbers",
+    "math": "the art of numbers",
+    "music": "minstrelsy",
+    "song": "ballad",
+    "game": "tourney",
+    "player": "champion",
+    "achievement": "deed of renown",
+    "mistake": "blunder",
+    "question": "query",
+    "truth": "verity",
+    "lie": {
+      "noun": "falsehood"
+    },
+    "trouble": "woe",
+    "danger": "peril",
+    "fear": "dread",
+    "joy": "gladness",
+    "luck": "fortune",
+    "people": "folk",
+    "person": "soul",
+    "part": "portion"
+  },
+  "tier2": {
+    "I think": "methinks",
+    "very": "most exceedingly",
+    "really": "verily",
+    "quickly": "with great haste",
+    "finally": "at long last",
+    "problem": "vexation",
+    "issue": "affliction",
+    "fix": {
+      "verb": "remedy",
+      "noun": "remedy"
+    },
+    "work": {
+      "verb": "toil",
+      "noun": "toil"
+    },
+    "break": {
+      "verb": "sunder"
+    },
+    "broken": {
+      "adjective": "accursed"
+    },
+    "easy": "trifling",
+    "hard": {
+      "adjective": "most arduous"
+    },
+    "difficult": "most arduous",
+    "awesome": "glorious",
+    "cool": {
+      "adjective": "wondrous"
+    },
+    "great": "magnificent",
+    "good": "fine and noble",
+    "bad": "ill-favored",
+    "today": "on this day",
+    "yesterday": "on the day past",
+    "tomorrow": "on the morrow",
+    "now": "forthwith",
+    "soon": "ere long",
+    "maybe": "perchance",
+    "probably": "as the stars foretell",
+    "weird": "uncanny",
+    "annoying": "vexing",
+    "cheap": "humble",
+    "expensive": "princely",
+    "buy": {
+      "verb": "procure"
+    },
+    "make": {
+      "verb": "fashion"
+    },
+    "create": {
+      "verb": "conjure"
+    },
+    "destroy": {
+      "verb": "lay waste to"
+    },
+    "remove": {
+      "verb": "strip away"
+    },
+    "add": {
+      "verb": "affix"
+    },
+    "change": {
+      "verb": "alter",
+      "noun": "alteration"
+    },
+    "improve": {
+      "verb": "refine"
+    },
+    "start": {
+      "verb": "commence",
+      "noun": "commencement"
+    },
+    "begin": {
+      "verb": "commence"
+    },
+    "finish": {
+      "verb": "conclude"
+    },
+    "stop": {
+      "verb": "halt"
+    },
+    "continue": {
+      "verb": "press on"
+    },
+    "try": {
+      "verb": "endeavor"
+    },
+    "attempt": {
+      "verb": "endeavor",
+      "noun": "endeavor"
+    },
+    "fail": {
+      "verb": "falter"
+    },
+    "succeed": {
+      "verb": "prevail"
+    },
+    "win": {
+      "verb": "triumph"
+    },
+    "lose": {
+      "verb": "forfeit"
+    },
+    "help": {
+      "verb": "aid",
+      "noun": "aid"
+    },
+    "need": {
+      "verb": "have need of"
+    },
+    "want": {
+      "verb": "desire"
+    },
+    "like": {
+      "verb": "fancy"
+    },
+    "love": {
+      "verb": "cherish"
+    },
+    "hate": {
+      "verb": "despise"
+    },
+    "understand": {
+      "verb": "fathom"
+    },
+    "learn": {
+      "verb": "glean"
+    },
+    "teach": {
+      "verb": "school"
+    },
+    "remember": {
+      "verb": "recollect"
+    },
+    "believe": {
+      "verb": "deem"
+    },
+    "think": {
+      "verb": "ponder"
+    },
+    "talk": {
+      "verb": "parley",
+      "noun": "parley"
+    },
+    "write": {
+      "verb": "pen"
+    },
+    "read": {
+      "verb": "peruse"
+    },
+    "send": {
+      "verb": "dispatch"
+    },
+    "give": {
+      "verb": "bestow"
+    },
+    "take": {
+      "verb": "seize"
+    },
+    "search": {
+      "verb": "scour"
+    },
+    "show": {
+      "verb": "reveal"
+    },
+    "hide": {
+      "verb": "conceal"
+    },
+    "open": {
+      "verb": "unseal"
+    },
+    "close": {
+      "verb": "seal"
+    },
+    "save": {
+      "verb": "preserve"
+    },
+    "load": {
+      "verb": "call forth"
+    },
+    "ask": {
+      "verb": "inquire of"
+    },
+    "wait": {
+      "verb": "tarry"
+    },
+    "stay": {
+      "verb": "abide"
+    },
+    "live": {
+      "verb": "dwell"
+    },
+    "die": {
+      "verb": "perish"
+    },
+    "kill": {
+      "verb": "slay"
+    },
+    "fight": {
+      "verb": "do battle with"
+    },
+    "happen": {
+      "verb": "come to pass"
+    },
+    "eat": {
+      "verb": "feast upon"
+    },
+    "drink": {
+      "verb": "quaff"
+    },
+    "sleep": {
+      "verb": "slumber",
+      "noun": "slumber"
+    },
+    "walk": {
+      "verb": "stride"
+    },
+    "drive": {
+      "verb": "ride"
+    },
+    "fly": {
+      "verb": "soar"
+    },
+    "travel": {
+      "verb": "journey",
+      "noun": "journey"
+    },
+    "visit": {
+      "verb": "call upon"
+    },
+    "leave": {
+      "verb": "depart"
+    },
+    "grow": {
+      "verb": "wax"
+    },
+    "shrink": {
+      "verb": "wane"
+    },
+    "increase": {
+      "verb": "swell"
+    },
+    "decrease": {
+      "verb": "dwindle"
+    },
+    "burn": {
+      "verb": "scorch"
+    },
+    "big": "vast",
+    "small": "slight",
+    "large": "vast",
+    "huge": "monstrous",
+    "tiny": "wee",
+    "fast": "swift",
+    "slow": "plodding",
+    "quick": "fleet",
+    "new": "newly-wrought",
+    "beautiful": "fair",
+    "pretty": "comely",
+    "ugly": "ill-favored",
+    "smart": "keen-witted",
+    "clever": "cunning",
+    "stupid": "dull-witted",
+    "crazy": "moonstruck",
+    "happy": "merry",
+    "sad": "sorrowful",
+    "angry": "wrathful",
+    "afraid": "affrighted",
+    "scared": "affrighted",
+    "tired": "weary",
+    "sick": "stricken",
+    "healthy": "hale",
+    "dangerous": "perilous",
+    "safe": "well-warded",
+    "important": "weighty",
+    "interesting": "curious",
+    "boring": "dreary",
+    "funny": "droll",
+    "serious": "grave",
+    "strange": "passing strange",
+    "simple": "plain",
+    "complex": "labyrinthine",
+    "complicated": "labyrinthine",
+    "perfect": "flawless",
+    "terrible": "dread",
+    "horrible": "ghastly",
+    "amazing": "marvelous",
+    "excellent": "most excellent",
+    "wonderful": "wondrous",
+    "nice": "pleasing",
+    "wrong": "amiss",
+    "full": "brimming",
+    "empty": "barren",
+    "clean": "unsullied",
+    "dirty": "besmirched",
+    "hot": "scorching",
+    "cold": "bitter cold",
+    "dark": "shadowed",
+    "bright": "gleaming",
+    "loud": "thunderous",
+    "quiet": "hushed",
+    "strong": "stalwart",
+    "weak": "feeble",
+    "heavy": "leaden",
+    "free": "unfettered",
+    "busy": "much-occupied",
+    "often": "oftentimes",
+    "always": "evermore",
+    "sometimes": "betimes",
+    "usually": "as is custom",
+    "suddenly": "of a sudden",
+    "eventually": "in the fullness of time",
+    "immediately": "forthwith",
+    "definitely": "assuredly",
+    "absolutely": "utterly",
+    "completely": "wholly",
+    "totally": "wholly",
+    "actually": "in truth",
+    "basically": "in essence",
+    "literally": "in very truth",
+    "honestly": "in good faith",
+    "together": "as one",
+    "again": "anew",
+    "everywhere": "in all the realm",
+    "nearly": "well-nigh",
+    "everyone": "all and sundry",
+    "everybody": "all and sundry",
+    "nobody": "nary a soul",
+    "someone": "some soul",
+    "somebody": "some soul",
+    "anything": "aught",
+    "nothing": "naught",
+    "figure out": "divine",
+    "figured out": "divined",
+    "find out": "discover",
+    "found out": "discovered",
+    "give up": "yield",
+    "gave up": "yielded",
+    "set up": "raise up",
+    "turn on": "awaken",
+    "turned on": "awakened",
+    "turn off": "lay to rest",
+    "turned off": "laid to rest",
+    "thank you": "I thank thee",
+    "a lot of": "a goodly number of",
+    "lots of": "a goodly number of",
+    "social media": "the gossip aether",
+    "machine learning": "spirit-tutelage",
+    "artificial intelligence": "the bound mind",
+    "take so long": "tarry so long",
+    "takes so long": "tarrieth so long",
+    "took so long": "tarried so long"
+  },
+  "tier3": {
+    "your": "thy",
+    "yours": "thine",
+    "yes": "aye",
+    "no": "nay",
+    "ok": "so be it",
+    "okay": "so be it",
+    "before": "ere",
+    "between": "betwixt",
+    "perhaps": "mayhap",
+    "listen": {
+      "verb": "hark"
+    },
+    "look": {
+      "verb": "behold"
+    },
+    "here": "in this very place",
+    "there": "yonder",
+    "almost": "well-nigh",
+    "certainly": "forsooth",
+    "indeed": "forsooth",
+    "anyway": "be that as it may",
+    "because": "for",
+    "stuff": "sundry artifacts",
+    "thing": "matter",
+    "but": "yet",
+    "also": "likewise",
+    "only": "naught but",
+    "although": "albeit",
+    "while": "whilst",
+    "among": "amongst",
+    "against": "athwart",
+    "hello": "hail",
+    "hi": "hail",
+    "goodbye": "fare thee well",
+    "thanks": "my thanks",
+    "sorry": "penitent",
+    "go": {
+      "verb": "fare"
+    },
+    "draw": {
+      "verb": "limn"
+    }
+  },
+  "interjections": [
+    "Lo!",
+    "Hark!",
+    "Behold!",
+    "Verily,",
+    "By my beard,",
+    "Mark me well:",
+    "As the prophecy foretold,",
+    "By the old gods,",
+    "Heed this:",
+    "Forsooth,",
+    "Hearken!",
+    "Attend!",
+    "By the seven stars,",
+    "Upon my oath,",
+    "Let it be known:",
+    "As the runes foretold,",
+    "Gods be good,",
+    "Soft now,",
+    "Pray attend:",
+    "I tell thee truly:",
+    "Wonder of wonders,",
+    "By the ancient pacts,"
+  ],
+  "exclamations": [
+    "Such is the way of the arcane!",
+    "The spirits were pleased.",
+    "A dark business indeed.",
+    "Thus spake the ancients.",
+    "May the aether have mercy.",
+    "And lo, it was so.",
+    "The runes do not lie.",
+    "A triumph worthy of song!",
+    "So mote it be.",
+    "The stars align!",
+    "Wisdom hard-won, that.",
+    "Let the chronicle show it.",
+    "The aether trembled.",
+    "Many a lesser mage has fallen thus.",
+    "Even the elders marvel.",
+    "Scarce could I believe mine eyes.",
+    "All was as the omens promised.",
+    "A lesson written in scorched robes.",
+    "The guild shall hear of this.",
+    "Glory to the craft!",
+    "Thus endeth the lesson."
+  ],
+  "phrases": {
+    "commit * to": "inscribe * into the chronicle of",
+    "committed * to": "inscribed * into the chronicle of",
+    "push * to": "cast * forth unto",
+    "pushed * to": "cast * forth unto",
+    "deploy * to": "unleash * upon",
+    "deployed * to": "unleashed * upon",
+    "download * from": "conjure * down from",
+    "downloaded * from": "conjured * down from",
+    "upload * to": "cast * up to",
+    "uploaded * to": "cast * up to",
+    "shut * down": "lay * to rest",
+    "turn * on": "awaken *",
+    "turn * off": "lay * to rest",
+    "set * up": "raise * up"
+  },
+  "misfortunes": [
+    "The gods watched, and did nothing.",
+    "As the omens foretold. I read them not.",
+    "A lesser wizard would have wept. I wept but a little.",
+    "The abyss gazed back, and filed no complaint.",
+    "Somewhere, a crow laughed.",
+    "The dark arts demand tribute. Mostly Saturdays.",
+    "Death himself looked on, and took notes.",
+    "It is said the ancients suffered thus. They are dead now.",
+    "The candles guttered, as if embarrassed for me.",
+    "Even the bound spirits averted their gaze.",
+    "I have known plagues with better manners.",
+    "The tower still stands. This is the whole of the good news."
+  ],
+  "triumphs": [
+    "Let the bells ring in distant towers!",
+    "Bards shall sing of this, badly.",
+    "The peasants rejoiced, sensibly, from a distance.",
+    "A feat scarcely diminished by its smallness.",
+    "The elders nodded, which is as close as they come to weeping.",
+    "Songs will be written. Short ones.",
+    "Glory, of the modest, indoor kind.",
+    "The prophecy is fulfilled, give or take.",
+    "History will remember this, if I remind it."
+  ],
+  "asides": [
+    "(a small doom, but mine own)",
+    "(the ancients had a word for this; it was unprintable)",
+    "(I have made peace with it, mostly)",
+    "(do not ask what it cost)",
+    "(the goat was unharmed)",
+    "(this is what passes for wisdom in my tower)",
+    "(I maintain it was the moon's fault)",
+    "(the council was not consulted)"
+  ]
+}

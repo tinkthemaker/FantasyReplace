@@ -1,0 +1,136 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+    tags: ['v*']
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        go-version: ['1.25']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Run tests
+        run: go test -v -race -coverprofile=coverage.out ./...
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.out
+          fail_ci_if_error: false
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          args: --timeout=3m
+
+  build:
+    name: Build binaries
+    runs-on: ${{ matrix.os }}
+    needs: [test, lint]
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            goos: linux
+            goarch: amd64
+            output: wizardify
+          - os: ubuntu-latest
+            goos: linux
+            goarch: arm64
+            output: wizardify
+          - os: macos-latest
+            goos: darwin
+            goarch: amd64
+            output: wizardify
+          - os: macos-latest
+            goos: darwin
+            goarch: arm64
+            output: wizardify
+          - os: windows-latest
+            goos: windows
+            goarch: amd64
+            output: wizardify.exe
+          - os: windows-latest
+            goos: windows
+            goarch: arm64
+            output: wizardify.exe
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      - name: Build
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: go build -o ${{ matrix.output }} .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wizardify-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: ${{ matrix.output }}
+          retention-days: 7
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./builds
+
+      - name: Prepare release assets
+        run: |
+          mkdir -p release
+          for dir in builds/*/; do
+            name=$(basename "$dir")
+            file=$(ls "$dir")
+            if [[ $file == *.exe ]]; then
+              cp "$dir$file" "release/wizardify-${name%-*-*}.exe"
+            else
+              cp "$dir$file" "release/wizardify-${name%-*-*}"
+            fi
+          done
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release/*
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

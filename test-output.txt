@@ -1,0 +1,53 @@
+=== RUN   TestMarkdownProtection
+--- PASS: TestMarkdownProtection (0.24s)
+=== RUN   TestHTML
+--- PASS: TestHTML (0.49s)
+=== RUN   TestHTMLFragment
+--- PASS: TestHTMLFragment (0.17s)
+=== RUN   TestAutoInflection
+--- PASS: TestAutoInflection (0.39s)
+=== RUN   TestPOSDisambiguation
+--- PASS: TestPOSDisambiguation (0.11s)
+=== RUN   TestAgreement
+--- PASS: TestAgreement (0.05s)
+=== RUN   TestArchaize
+--- PASS: TestArchaize (0.44s)
+=== RUN   TestInversions
+--- PASS: TestInversions (0.00s)
+=== RUN   TestRealPostRegressions
+--- PASS: TestRealPostRegressions (0.33s)
+=== RUN   TestEMEGrammar
+--- PASS: TestEMEGrammar (0.45s)
+=== RUN   TestToneFlourishes
+--- PASS: TestToneFlourishes (6.68s)
+=== RUN   TestEmptyInput
+--- PASS: TestEmptyInput (0.00s)
+=== RUN   TestWhitespaceOnly
+--- PASS: TestWhitespaceOnly (0.00s)
+=== RUN   TestSpecialCharacters
+--- PASS: TestSpecialCharacters (0.22s)
+=== RUN   TestIntensityLevels
+--- PASS: TestIntensityLevels (0.16s)
+=== RUN   TestMultilineContent
+--- PASS: TestMultilineContent (0.06s)
+=== RUN   TestFrontmatterPreservation
+--- PASS: TestFrontmatterPreservation (0.06s)
+=== RUN   TestCodeBlockPreservation
+    wizard_test.go:347: content outside code not transformed: "In this very place is some incantations:\n\n```go\nfunc test(t *testing.T) {\n\tif err != nil {\n\t\tt.Fatal(err)\n\t}\n}\n```\n\nBy the seven stars, the incantations above should not alter."
+--- FAIL: TestCodeBlockPreservation (0.11s)
+=== RUN   TestInlineCodePreservation
+--- PASS: TestInlineCodePreservation (0.11s)
+=== RUN   TestURLPreservation
+--- PASS: TestURLPreservation (0.11s)
+=== RUN   TestLinkPreservation
+--- PASS: TestLinkPreservation (0.12s)
+=== RUN   TestArticleAgreement
+--- PASS: TestArticleAgreement (0.11s)
+=== RUN   TestConsistency
+--- PASS: TestConsistency (0.11s)
+=== RUN   TestCaseSensitivity
+    wizard_test.go:420: title case not preserved: "Essay The Incantations."
+--- FAIL: TestCaseSensitivity (0.16s)
+FAIL
+FAIL	wizardify	11.092s
+FAIL

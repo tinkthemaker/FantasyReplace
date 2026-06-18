@@ -1,0 +1,39 @@
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+*.o
+*.a
+
+# Build artifacts
+bin/
+dist/
+build/
+*.wizard.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Go
+go.sum
+go.mod.vendor/
+vendor/
+
+# Test coverage
+*.out
+coverage.html
+coverage.lcov
+
+# Environment
+.env
+.env.local
+
+# OS
+Thumbs.db
+.DS_Store
