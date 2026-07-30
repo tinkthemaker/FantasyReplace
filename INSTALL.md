@@ -1,94 +1,56 @@
 # Installation Guide
 
-## Quick Start
+## Build from source
 
-### macOS (Homebrew)
-```bash
-brew install wizardify
-```
+Wizardify currently supports source builds and downloadable CI artifacts. Package-manager formulae are not published yet.
 
-### Windows (Scoop)
-```powershell
-scoop bucket add wizardify https://github.com/yourusername/wizardify-scoop
-scoop install wizardify
-```
-
-### Linux (apt)
-```bash
-sudo add-apt-repository ppa:yourusername/wizardify
-sudo apt update
-sudo apt install wizardify
-```
-
-## Download Pre-built Binaries
-
-Visit the [GitHub Releases](https://github.com/yourusername/wizardify/releases) page to download:
-- **Windows** (wizardify.exe)
-- **macOS** (Intel & Apple Silicon)
-- **Linux** (x86_64 & ARM)
-
-### Windows (Manual)
-1. Download `wizardify.exe` from [Releases](https://github.com/yourusername/wizardify/releases)
-2. Move to a folder in your PATH (or anywhere accessible)
-3. Run: `wizardify --help`
-
-### macOS/Linux (Manual)
-1. Download the binary for your OS
-2. Make it executable: `chmod +x wizardify`
-3. Move to `/usr/local/bin`: `sudo mv wizardify /usr/local/bin/`
-4. Run: `wizardify --help`
-
-## Build from Source
-
-Requires [Go 1.25+](https://golang.org/doc/install)
+Requires Go 1.25 or newer:
 
 ```bash
-git clone https://github.com/yourusername/wizardify.git
-cd wizardify
+git clone <repository-url>
+cd FantasyReplace
 go build -o wizardify .
-./wizardify --help
 ```
 
-## Docker
+On Windows, use `go build -o wizardify.exe .`.
+
+The resulting executable is self-contained: the default lexicon is embedded. Put the executable somewhere on your `PATH`, or run it from the build directory.
+
+## CI artifacts
+
+Successful GitHub Actions builds produce platform-specific artifacts:
+
+- `wizardify-windows-amd64.exe`
+- `wizardify-windows-arm64.exe`
+- `wizardify-macos-amd64`
+- `wizardify-macos-arm64`
+- `wizardify-linux-amd64`
+- `wizardify-linux-arm64`
+
+On macOS and Linux, make the downloaded file executable:
 
 ```bash
-docker pull wizardify:latest
-docker run wizardify < your-file.md > output.md
+chmod +x wizardify-*
 ```
 
-Or build locally:
-```bash
-docker build -t wizardify .
-docker run -v /path/to/files:/data wizardify -i 3 /data/input.md -o /data/output.md
-```
-
-## Verify Installation
+## Verify
 
 ```bash
-wizardify --help
+wizardify -help
+wizardify -version
+wizardify sample-post.md -stdout
 ```
 
-You should see the help menu with available commands.
+## Custom lexicons
+
+Wizardify checks for `lexicon.json` in the current directory and next to the executable before using its embedded default. Select a different file explicitly with:
+
+```bash
+wizardify post.md -lexicon /path/to/lexicon.json
+```
 
 ## Troubleshooting
 
-### Command not found
-- **Windows**: Ensure `wizardify.exe` is in your PATH or run it from the containing directory
-- **macOS/Linux**: Run `which wizardify` to check location; move to `/usr/local/bin` if needed
-
-### Lexicon not found
-By default, wizardify looks for `lexicon.json` in:
-1. Current directory
-2. Same folder as the executable
-3. Explicitly specify: `wizardify -lexicon /path/to/lexicon.json`
-
-### Permission denied (macOS/Linux)
-```bash
-chmod +x wizardify
-```
-
-## Next Steps
-
-- **CLI usage**: `wizardify post.md -i 3`
-- **Interactive TUI**: Just run `wizardify` with no arguments
-- **Read more**: See [README.md](README.md) for full documentation
+- **Command not found:** invoke the executable by path or add its directory to `PATH`.
+- **Permission denied on macOS/Linux:** run `chmod +x` on the downloaded binary.
+- **Lexicon error:** validate the JSON or omit `-lexicon` to use the embedded default.

@@ -92,7 +92,22 @@ jobs:
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
-        run: go build -o ${{ matrix.output }} .
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME:-dev}"
+          commit="${GITHUB_SHA::12}"
+          built="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          go build -trimpath -ldflags "-s -w -X main.version=$version -X main.commit=$commit -X main.buildDate=$built" -o "${{ matrix.output }}" .
+
+      - name: Smoke test native Unix binary
+        if: matrix.goarch == 'amd64' && matrix.goos != 'windows'
+        shell: bash
+        run: ./wizardify --version
+
+      - name: Smoke test native Windows binary
+        if: matrix.goarch == 'amd64' && matrix.goos == 'windows'
+        shell: pwsh
+        run: .\wizardify.exe --version
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -121,11 +136,13 @@ jobs:
             name=$(basename "$dir")
             file=$(ls "$dir")
             if [[ $file == *.exe ]]; then
-              cp "$dir$file" "release/wizardify-${name%-*-*}.exe"
+              cp "$dir$file" "release/${name}.exe"
             else
-              cp "$dir$file" "release/wizardify-${name%-*-*}"
+              cp "$dir$file" "release/${name}"
             fi
           done
+          cd release
+          sha256sum * > SHA256SUMS
 
       - name: Create Release
         uses: softprops/action-gh-release@v1

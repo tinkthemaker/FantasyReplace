@@ -10,8 +10,8 @@ Be respectful, inclusive, and constructive. We welcome all contributions regardl
 
 ### Fork & Clone
 ```bash
-git clone https://github.com/yourusername/wizardify.git
-cd wizardify
+git clone <repository-url>
+cd FantasyReplace
 ```
 
 ### Build & Test
@@ -125,6 +125,7 @@ The `*` is replaced with the captured middle words.
 - Use **common phrases** — test tier1 entries with real documents
 - Balance **whimsy with readability** — tier1 should be clever but clear
 - For **tier3**, embrace drama and complexity
+- Treat additions to the `newsSafeKeys` allowlist as factual-safety changes: keep them meaning-preserving and add a news-safe regression test
 
 ### Adding Entries
 1. Identify the lemma (base form)
@@ -203,7 +204,7 @@ Contributors are recognized in:
 
 ## Questions?
 
-- Open an [Issue](https://github.com/yourusername/wizardify/issues) for questions
+- Open an issue in this repository for questions
 - Check [README.md](README.md) for general usage
 - Discuss in PR comments for implementation details
 

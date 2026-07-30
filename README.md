@@ -2,7 +2,7 @@
 
 Transmute any text into wizardly proclamations before posting it to thy public chronicle (blog).
 
-Pure Go. One binary, two modes: a CLI and a charm.land (Bubble Tea) TUI. Supports **Markdown** and **HTML** sources.
+Pure Go. One self-contained binary, two modes: a CLI and a charm.land (Bubble Tea) TUI. The default lexicon is embedded; `-lexicon` can load a custom one. Supports **Markdown** and **HTML** sources.
 
 The engine tags every word with its part of speech (via `jdkato/prose`), so it works on arbitrary text — not just words in the dictionary.
 
@@ -41,21 +41,31 @@ What stays untouched:
 wizardify                          launch the TUI (file picker + live preview)
 wizardify post.md -i 3             full wizard, writes post.wizard.md
 wizardify page.html -i 2           HTML in, HTML out (text nodes only)
-wizardify notes/ -o out/           whole folder (.md, .html, .txt)
+wizardify notes/ -o out/           folder tree (.md, .html, .txt)
 wizardify post.md -stdout          print, write nothing
 wizardify post.md -in-place        overwrite original
 wizardify post.md -seed 42         reproducible flourishes
+wizardify news.md -profile news-safe  factual, restricted news styling
+wizardify news.md -profile news-safe -flair 2  factual styling with contextual imagery
 ```
 
-TUI keys: `1/2/3` intensity, `n` reroll flourishes, `o` toggle original, `s` save `.wizard` copy, `esc` back to picker, `q` quit.
+The TUI shows an original/transformed diff. Keys: `1/2/3` preset, `w` toggle news-safe mode, `v` cycle news flair, `g/j/f` toggle grammar/interjections/comedy, `n` reroll flourishes, `tab` switch panes on narrow terminals, `s` save a `.wizard` copy, `esc` back, `q` quit.
 
-`lexicon.json` is found in the current directory or next to the executable; override with `-lexicon path`.
+`lexicon.json` is found in the current directory or next to the executable. If neither exists, the embedded default is used; override with `-lexicon path`.
+
+## News-safe profile
+
+Use `-profile news-safe` for factual summaries and attributed news copy. With no input files, the same flag opens the TUI directly in news-safe mode.
+
+News-safe mode uses a deliberately small vocabulary allowlist and always disables archaic grammar, interjections, and comedy. It preserves Markdown headings, quotations, blockquotes, figures, dates, currencies, percentages, acronyms, proper names, links, and source-attribution lines. In HTML it also preserves headings, links, quotations, citations, timestamps, and footers.
+
+This profile is a guardrail for already-reviewed summaries; it is not a fact checker. Keep the neutral source-linked summary alongside the styled output and review it before publishing.
+
+`-flair 1..3` optionally appends category-aware imagery to large quantities while preserving the exact figure. Money, audiences, downloads, and distances receive different language; level 3 also permits restrained generic quantity flair. Flair is suppressed in quotations, headings, citations, source lines, links, and reporting about casualties, crime, medicine, war, or disasters.
 
 ## Installation
 
-**Pre-built binaries** for Windows, macOS, and Linux are available on the [Releases](https://github.com/yourusername/wizardify/releases) page.
-
-See [INSTALL.md](INSTALL.md) for detailed installation instructions.
+CI builds binaries for Windows, macOS, and Linux. See [INSTALL.md](INSTALL.md) for source and CI-artifact installation instructions.
 
 ## Building
 

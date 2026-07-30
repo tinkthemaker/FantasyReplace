@@ -5,9 +5,31 @@ package main
 
 import (
 	"strings"
+	"sync"
 
 	prose "github.com/jdkato/prose/v2"
 )
+
+var (
+	posModelOnce sync.Once
+	posModel     *prose.Model
+	posModelErr  error
+)
+
+// sharedPOSModel avoids decoding prose's large embedded perceptron model for
+// every document. The tagger only reads the trained model during inference,
+// so one model can safely serve concurrent transformations.
+func sharedPOSModel() (*prose.Model, error) {
+	posModelOnce.Do(func() {
+		var doc *prose.Document
+		doc, posModelErr = prose.NewDocument("",
+			prose.WithExtraction(false), prose.WithSegmentation(false))
+		if posModelErr == nil {
+			posModel = doc.Model
+		}
+	})
+	return posModel, posModelErr
+}
 
 type token struct {
 	Text  string
@@ -21,6 +43,12 @@ var forceTags = map[string]string{
 	"git": "NN", "repo": "NN", "config": "NN", "firmware": "NN",
 	"wifi": "NN", "api": "NN", "cli": "NN", "pcb": "NN", "qmk": "NNP",
 	"backend": "NN", "frontend": "NN", "linux": "NNP", "windows": "NNP",
+	"ai": "NN", "llm": "NN", "gpu": "NN", "cpu": "NN", "ssd": "NN",
+	"token": "NN", "bot": "NN", "saas": "NN", "url": "NN", "dns": "NN",
+	"docker": "NN", "kubernetes": "NNP", "nginx": "NNP", "json": "NN",
+	"yaml": "NN", "html": "NN", "css": "NN", "sql": "NN",
+	"afk": "RB", // adverb: "he went AFK"
+	"rag": "NN", "embeddings": "NNS",
 }
 
 // verbish words often mis-tagged NNS when they are 3rd-person verbs
@@ -32,8 +60,13 @@ var verbish = map[string]bool{
 }
 
 func tagSegment(text string) []token {
+	model, err := sharedPOSModel()
+	if err != nil {
+		return nil
+	}
 	doc, err := prose.NewDocument(text,
-		prose.WithExtraction(false), prose.WithSegmentation(false))
+		prose.WithExtraction(false), prose.WithSegmentation(false),
+		prose.UsingModel(model))
 	if err != nil {
 		return nil
 	}
@@ -54,6 +87,12 @@ func tagSegment(text string) []token {
 
 func correctTags(toks []token) {
 	for i := range toks {
+		// Internal DOM boundary sentinels must never participate in grammar.
+		// Marking them as symbols lets prevWord/nextWord see across inline tags.
+		if strings.ContainsRune(toks[i].Text, '\x00') {
+			toks[i].Tag = "SYM"
+			continue
+		}
 		lower := strings.ToLower(toks[i].Text)
 		if tag, ok := forceTags[lower]; ok {
 			toks[i].Tag = tag

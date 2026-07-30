@@ -15,9 +15,10 @@ var (
 )
 
 // applyInversions reorders a fraction of matching sentences:
-//   "I thought"      -> "thought I"
-//   "I never saw"    -> "never did I see"
-//   "It was a fine forging." -> "A fine forging it was."
+//
+//	"I thought"      -> "thought I"
+//	"I never saw"    -> "never did I see"
+//	"It was a fine forging." -> "A fine forging it was."
 func applyInversions(text string, rng *rand.Rand) string {
 	text = reSpeechInv.ReplaceAllStringFunc(text, func(m string) string {
 		if rng.Float64() >= 0.5 {

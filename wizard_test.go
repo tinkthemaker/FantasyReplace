@@ -82,7 +82,7 @@ func TestHTMLFragment(t *testing.T) {
 func TestAutoInflection(t *testing.T) {
 	lex := lx(t)
 	cases := []struct{ in, want string }{
-		{"The server crashes every night.", "unravels"},        // VBZ
+		{"The server crashes every night.", "unravels"},         // VBZ
 		{"Both servers crashed.", "summoning altars unraveled"}, // NNS + VBD
 		{"The app keeps crashing.", "unraveling"},               // VBG
 		{"I was testing the firmware.", "essaying"},             // verb sense, VBG
@@ -414,7 +414,9 @@ func TestCaseSensitivity(t *testing.T) {
 	if !strings.Contains(lower, "catastrophic unraveling") {
 		t.Errorf("lowercase transform failed: %q", lower)
 	}
-	if !strings.Contains(upper, "CATASTROPHIC UNRAVELING") {
-		t.Errorf("uppercase not preserved: %q", upper)
+	// Multi-word replacement from ALL-CAPS source now uses Title Case
+	// (reads better in body text than ALL CAPS)
+	if !strings.Contains(upper, "Catastrophic Unraveling") {
+		t.Errorf("title-case not applied to multi-word ALL-CAPS replacement: %q", upper)
 	}
 }

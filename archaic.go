@@ -13,6 +13,10 @@ var thouAux = map[string]string{
 	"may": "mayst", "might": "mightst", "must": "must",
 }
 
+var estSpecial = map[string]string{
+	"edit": "editest", // two syllables; the final consonant is not doubled
+}
+
 var ethSpecial = map[string]string{
 	"has": "hath", "does": "doth", "says": "saith", "is": "is", "was": "was",
 }
@@ -53,6 +57,9 @@ func estify(verb string) string {
 	if aux, ok := thouAux[verb]; ok {
 		return aux
 	}
+	if special, ok := estSpecial[verb]; ok {
+		return special
+	}
 	switch {
 	case strings.HasSuffix(verb, "e"):
 		return verb + "st"
@@ -92,6 +99,32 @@ func isAlphabetic(s string) bool {
 		}
 	}
 	return true
+}
+
+// isTitleCaseContext returns true if the token at index i is part of a
+// title-case sequence — the token itself is capitalized AND at least one
+// neighboring word token is also capitalized (excluding "I"). This detects
+// headings and proper-noun phrases in body text, preventing -eth on words
+// like "Dominates" in "Google Dominates the Market".
+func isTitleCaseContext(toks []token, i int) bool {
+	if len(toks[i].Text) == 0 {
+		return false
+	}
+	self := toks[i].Text[0]
+	if !(self >= 'A' && self <= 'Z') {
+		return false // not capitalized, can't be title-case
+	}
+	if toks[i].Text == "I" {
+		return false // "I" is always capitalized
+	}
+	capNeighbor := func(j int) bool {
+		if j < 0 || j >= len(toks) {
+			return false
+		}
+		t := toks[j].Text
+		return len(t) > 0 && t[0] >= 'A' && t[0] <= 'Z' && t != "I"
+	}
+	return capNeighbor(prevWord(toks, i)) || capNeighbor(nextWord(toks, i))
 }
 
 // archaizeToken decides the archaic form for token i, using context.
@@ -160,6 +193,11 @@ func archaizeToken(toks []token, i int) string {
 
 	// any 3rd-person singular verb: -eth
 	if t.Tag == "VBZ" {
+		// Skip -eth in title-case context (proper nouns, headings):
+		// "Google Dominates" should not become "Google Dominateth".
+		if isTitleCaseContext(toks, i) {
+			return ""
+		}
 		if special, ok := ethSpecial[lower]; ok {
 			if special == lower {
 				return ""

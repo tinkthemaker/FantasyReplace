@@ -35,11 +35,50 @@ func expandContractions(text string) string {
 }
 
 // ---- negation without do-support: "I do not know" -> "I know not"
+// But NOT for participle constructions: "do not get stuck" should stay,
+// because "get not stuck" is ungrammatical. We detect this by checking
+// if the word after the main verb looks like a past participle.
 
 var (
-	reNegDecl = regexp.MustCompile(`\b(do|does|did|Do|Does|Did) not ([a-z]+)\b`)
+	reNegDecl = regexp.MustCompile(`\b(do|does|did|Do|Does|Did) not ([a-z]+)(?:\s+([a-z]+))?`)
 	reNegImp  = regexp.MustCompile(`(^|[.!?]\s+|\n)(Do not|do not) ([a-z]+)\b`)
 )
+
+// looksLikeParticiple checks if a word is likely a past participle: ends in
+// -ed, -en, or is a known irregular VBN form. Conservative — better to
+// skip a valid transformation than produce "get not stuck".
+func looksLikeParticiple(word string) bool {
+	w := strings.ToLower(word)
+	if strings.HasSuffix(w, "ed") || strings.HasSuffix(w, "en") {
+		return true
+	}
+	for _, forms := range irregularVerbs {
+		if forms[1] == w { // VBN form
+			return true
+		}
+	}
+	// Common irregular past participles not in the conjugation table
+	// (the table only covers verbs that have lexicon entries).
+	return irregularParticiples[w]
+}
+
+// irregularParticiples supplements irregularVerbs for the participle check.
+// These are common English past participles that aren't needed for
+// conjugation (no lexicon entry uses them) but must be recognized by
+// looksLikeParticiple to guard do-support removal.
+var irregularParticiples = map[string]bool{
+	"stuck": true, "struck": true, "hung": true, "swung": true,
+	"flung": true, "slung": true, "wrung": true, "sung": true,
+	"rung": true, "sunk": true, "begun": true, "drunk": true,
+	"shrunk": true, "slain": true, "shown": true, "blown": true,
+	"drawn": true, "grown": true, "known": true, "thrown": true,
+	"flown": true, "sown": true, "torn": true, "worn": true,
+	"born": true, "borne": true, "frozen": true, "chosen": true,
+	"stolen": true, "woken": true, "bidden": true, "forbidden": true,
+	"hidden": true, "ridden": true, "risen": true, "arisen": true,
+	"woven": true, "overdone": true, "undone": true, "misdone": true,
+	"redone": true, "foreseen": true, "overseen": true,
+}
 
 func removeDoSupport(text string) string {
 	// imperatives first: "Do not touch the altar" -> "Touch not the altar"
@@ -55,13 +94,24 @@ func removeDoSupport(text string) string {
 	text = reNegDecl.ReplaceAllStringFunc(text, func(m string) string {
 		g := reNegDecl.FindStringSubmatch(m)
 		aux, verb := strings.ToLower(g[1]), g[2]
+		// Skip participle constructions: "don't get stuck" should NOT become
+		// "get not stuck". If the word after the verb is a past participle,
+		// the verb + participle form a unit that can't absorb negation.
+		if g[3] != "" && looksLikeParticiple(g[3]) {
+			return m
+		}
 		switch aux {
 		case "did":
 			verb = conjugate(verb, "VBD")
 		case "does":
 			verb = conjugate(verb, "VBZ")
 		}
-		return matchCase(g[1], verb+" not")
+		out := matchCase(g[1], verb+" not")
+		// Preserve the following word if the regex captured it (g[3]).
+		if g[3] != "" {
+			out += " " + g[3]
+		}
+		return out
 	})
 	return text
 }

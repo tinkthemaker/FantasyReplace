@@ -12,6 +12,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"hash/fnv"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"sort"
@@ -23,6 +25,14 @@ var sourceExts = map[string]bool{
 	".md": true, ".markdown": true, ".txt": true, ".html": true, ".htm": true,
 }
 
+// Overridden by release builds through -ldflags. Keeping useful development
+// defaults makes locally-built binaries self-identifying too.
+var (
+	version   = "dev"
+	commit    = "unknown"
+	buildDate = "unknown"
+)
+
 func defaultLexiconPath() string {
 	if _, err := os.Stat("lexicon.json"); err == nil {
 		return "lexicon.json"
@@ -33,37 +43,94 @@ func defaultLexiconPath() string {
 			return p
 		}
 	}
-	return "lexicon.json"
+	return ""
 }
 
 func collectFiles(inputs []string) ([]string, error) {
-	var files []string
+	sources, err := collectSourceFiles(inputs)
+	if err != nil {
+		return nil, err
+	}
+	files := make([]string, len(sources))
+	for i, source := range sources {
+		files[i] = source.Path
+	}
+	return files, nil
+}
+
+type sourceFile struct {
+	Path string
+	Rel  string
+}
+
+func collectSourceFiles(inputs []string) ([]sourceFile, error) {
+	var files []sourceFile
+	seen := map[string]bool{}
 	for _, inp := range inputs {
 		info, err := os.Stat(inp)
 		if err != nil {
 			return nil, fmt.Errorf("%s not found", inp)
 		}
 		if info.IsDir() {
-			entries, err := os.ReadDir(inp)
+			err := filepath.WalkDir(inp, func(path string, entry fs.DirEntry, walkErr error) error {
+				if walkErr != nil {
+					return walkErr
+				}
+				if entry.IsDir() || !sourceExts[strings.ToLower(filepath.Ext(entry.Name()))] {
+					return nil
+				}
+				rel, err := filepath.Rel(inp, path)
+				if err != nil {
+					return err
+				}
+				abs, _ := filepath.Abs(path)
+				if !seen[abs] {
+					seen[abs] = true
+					files = append(files, sourceFile{Path: path, Rel: rel})
+				}
+				return nil
+			})
 			if err != nil {
 				return nil, err
 			}
-			for _, e := range entries {
-				if !e.IsDir() && sourceExts[strings.ToLower(filepath.Ext(e.Name()))] {
-					files = append(files, filepath.Join(inp, e.Name()))
-				}
-			}
 		} else {
-			files = append(files, inp)
+			if !sourceExts[strings.ToLower(filepath.Ext(inp))] {
+				return nil, fmt.Errorf("%s has an unsupported file type", inp)
+			}
+			abs, _ := filepath.Abs(inp)
+			if !seen[abs] {
+				seen[abs] = true
+				files = append(files, sourceFile{Path: inp, Rel: filepath.Base(inp)})
+			}
 		}
 	}
-	sort.Strings(files)
+	sort.Slice(files, func(i, j int) bool { return files[i].Path < files[j].Path })
 	return files, nil
+}
+
+func seedForFile(seed int64, rel string, multiple bool) int64 {
+	if !multiple {
+		return seed
+	}
+	h := fnv.New64a()
+	_, _ = h.Write([]byte(filepath.ToSlash(rel)))
+	return seed ^ int64(h.Sum64())
 }
 
 func outPath(in string) string {
 	ext := filepath.Ext(in)
 	return strings.TrimSuffix(in, ext) + ".wizard" + ext
+}
+
+func normalizeProfile(value string) (string, error) {
+	profile := strings.ToLower(strings.TrimSpace(value))
+	if profile == "news" {
+		profile = "news-safe"
+	}
+	if profile != "wizard" && profile != "news-safe" {
+		return "", fmt.Errorf("profile must be wizard or news-safe")
+	}
+	return profile, nil
 }
 
 // reorderArgs lets flags appear after positional arguments
@@ -72,6 +139,7 @@ func reorderArgs(args []string) []string {
 	boolFlags := map[string]bool{
 		"-stdout": true, "--stdout": true,
 		"-in-place": true, "--in-place": true,
+		"-version": true, "--version": true,
 	}
 	var flags, pos []string
 	for i := 0; i < len(args); i++ {
@@ -92,15 +160,40 @@ func reorderArgs(args []string) []string {
 func main() {
 	intensity := flag.Int("i", 1, "intensity 1-3")
 	outdir := flag.String("o", "", "output directory (default: next to input)")
-	lexPath := flag.String("lexicon", defaultLexiconPath(), "path to lexicon JSON")
+	lexPath := flag.String("lexicon", defaultLexiconPath(), "path to lexicon JSON (default: local file if present, otherwise embedded)")
 	seed := flag.Int64("seed", 0, "RNG seed for reproducible flourishes (0 = random)")
+	profile := flag.String("profile", "wizard", "style profile: wizard or news-safe")
+	flair := flag.Int("flair", 0, "contextual news flair 0-3 (requires news-safe)")
+	showVersion := flag.Bool("version", false, "print version and build information")
 	toStdout := flag.Bool("stdout", false, "print result, write nothing")
 	inPlace := flag.Bool("in-place", false, "overwrite input files")
 	dir := flag.String("dir", ".", "starting directory for the TUI file picker")
 	flag.CommandLine.Parse(reorderArgs(os.Args[1:]))
+	if *showVersion {
+		fmt.Printf("wizardify %s (commit %s, built %s)\n", version, commit, buildDate)
+		return
+	}
 
 	if *intensity < 1 || *intensity > 3 {
 		fmt.Fprintln(os.Stderr, "intensity must be 1, 2, or 3")
+		os.Exit(1)
+	}
+	normalizedProfile, err := normalizeProfile(*profile)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	*profile = normalizedProfile
+	if *flair < 0 || *flair > 3 {
+		fmt.Fprintln(os.Stderr, "flair must be between 0 and 3")
+		os.Exit(1)
+	}
+	if *flair > 0 && *profile != "news-safe" {
+		fmt.Fprintln(os.Stderr, "-flair requires -profile news-safe")
+		os.Exit(1)
+	}
+	if *toStdout && *inPlace || *toStdout && *outdir != "" || *inPlace && *outdir != "" {
+		fmt.Fprintln(os.Stderr, "-stdout, -in-place, and -o are mutually exclusive")
 		os.Exit(1)
 	}
 	lex, err := LoadLexicon(*lexPath)
@@ -108,9 +201,14 @@ func main() {
 		fmt.Fprintf(os.Stderr, "could not load lexicon: %v\n", err)
 		os.Exit(1)
 	}
+	wizardifier, err := NewWizardifier(lex)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "could not compile lexicon: %v\n", err)
+		os.Exit(1)
+	}
 
 	if flag.NArg() == 0 {
-		runTUI(lex, *dir)
+		runTUI(wizardifier, *dir, *profile == "news-safe", *flair)
 		return
 	}
 
@@ -118,42 +216,70 @@ func main() {
 	if s == 0 {
 		s = time.Now().UnixNano() % 100000
 	}
-	files, err := collectFiles(flag.Args())
+	files, err := collectSourceFiles(flag.Args())
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "error:", err)
 		os.Exit(1)
 	}
-	for _, f := range files {
-		b, err := os.ReadFile(f)
+	if len(files) == 0 {
+		fmt.Fprintln(os.Stderr, "error: no supported files found")
+		os.Exit(1)
+	}
+	if *toStdout && len(files) != 1 {
+		fmt.Fprintln(os.Stderr, "-stdout requires exactly one input file")
+		os.Exit(1)
+	}
+
+	outputs := map[string]string{}
+	for _, source := range files {
+		if *toStdout || *inPlace || *outdir == "" {
+			continue
+		}
+		out := filepath.Join(*outdir, outPath(source.Rel))
+		key, _ := filepath.Abs(out)
+		if previous, exists := outputs[key]; exists {
+			fmt.Fprintf(os.Stderr, "output collision: %s and %s both map to %s\n", previous, source.Path, out)
+			os.Exit(1)
+		}
+		outputs[key] = source.Path
+	}
+
+	for _, source := range files {
+		b, err := os.ReadFile(source.Path)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "error:", err)
 			os.Exit(1)
 		}
-		result, err := WizardifyFile(f, string(b), lex, *intensity, s)
+		fileSeed := seedForFile(s, source.Rel, len(files) > 1)
+		opts := DefaultTransformOptions(*intensity, fileSeed)
+		if *profile == "news-safe" {
+			opts = DefaultNewsSafeOptions(fileSeed)
+			opts.NewsFlair = *flair
+		}
+		result, err := wizardifier.File(source.Path, string(b), opts)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "error transmuting %s: %v\n", f, err)
+			fmt.Fprintf(os.Stderr, "error transmuting %s: %v\n", source.Path, err)
 			os.Exit(1)
 		}
 		switch {
 		case *toStdout:
 			fmt.Print(result)
 		case *inPlace:
-			if err := os.WriteFile(f, []byte(result), 0644); err != nil {
+			if err := safeWriteFile(source.Path, []byte(result), 0644); err != nil {
 				fmt.Fprintln(os.Stderr, "error:", err)
 				os.Exit(1)
 			}
-			fmt.Println("transmuted in place:", f)
+			fmt.Println("transmuted in place:", source.Path)
 		default:
-			out := outPath(f)
+			out := outPath(source.Path)
 			if *outdir != "" {
-				os.MkdirAll(*outdir, 0755)
-				out = filepath.Join(*outdir, filepath.Base(out))
+				out = filepath.Join(*outdir, outPath(source.Rel))
 			}
-			if err := os.WriteFile(out, []byte(result), 0644); err != nil {
+			if err := safeWriteFile(out, []byte(result), 0644); err != nil {
 				fmt.Fprintln(os.Stderr, "error:", err)
 				os.Exit(1)
 			}
-			fmt.Printf("transmuted: %s -> %s\n", f, out)
+			fmt.Printf("transmuted: %s -> %s\n", source.Path, out)
 		}
 	}
 }
