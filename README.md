@@ -45,6 +45,8 @@ wizardify notes/ -o out/           folder tree (.md, .html, .txt)
 wizardify post.md -stdout          print, write nothing
 wizardify post.md -in-place        overwrite original
 wizardify post.md -seed 42         reproducible flourishes
+wizardify post.md -dry-run         preview the destination without writing
+wizardify post.md -check           exit 1 when the input would change
 wizardify news.md -profile news-safe  factual, restricted news styling
 wizardify news.md -profile news-safe -flair 2  factual styling with contextual imagery
 ```

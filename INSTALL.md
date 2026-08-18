@@ -39,6 +39,8 @@ chmod +x wizardify-*
 wizardify -help
 wizardify -version
 wizardify sample-post.md -stdout
+# Note: -check exits 0 if already wizardified, 1 if changes would be made
+wizardify sample-post.md -check || echo "sample-post.md would be changed (expected)"
 ```
 
 ## Custom lexicons

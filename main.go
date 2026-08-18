@@ -133,6 +133,25 @@ func normalizeProfile(value string) (string, error) {
 	return profile, nil
 }
 
+func validateOutputMode(stdout, inPlace, dryRun, check bool, outdir string) error {
+	if dryRun && check {
+		return fmt.Errorf("-dry-run and -check are mutually exclusive")
+	}
+	if stdout && (inPlace || dryRun || check || outdir != "") {
+		return fmt.Errorf("-stdout cannot be combined with -in-place, -dry-run, -check, or -o")
+	}
+	if inPlace && (dryRun || check || outdir != "") {
+		return fmt.Errorf("-in-place cannot be combined with -dry-run, -check, or -o")
+	}
+	if dryRun && outdir != "" {
+		return fmt.Errorf("-dry-run cannot be combined with -o")
+	}
+	if check && outdir != "" {
+		return fmt.Errorf("-check cannot be combined with -o")
+	}
+	return nil
+}
+
 // reorderArgs lets flags appear after positional arguments
 // (Go's flag package normally stops parsing at the first positional).
 func reorderArgs(args []string) []string {
@@ -140,6 +159,9 @@ func reorderArgs(args []string) []string {
 		"-stdout": true, "--stdout": true,
 		"-in-place": true, "--in-place": true,
 		"-version": true, "--version": true,
+		"-dry-run": true, "--dry-run": true,
+		"-check": true, "--check": true,
+		"-h": true, "--help": true,
 	}
 	var flags, pos []string
 	for i := 0; i < len(args); i++ {
@@ -167,6 +189,8 @@ func main() {
 	showVersion := flag.Bool("version", false, "print version and build information")
 	toStdout := flag.Bool("stdout", false, "print result, write nothing")
 	inPlace := flag.Bool("in-place", false, "overwrite input files")
+	dryRun := flag.Bool("dry-run", false, "show what would be written, without changing files")
+	check := flag.Bool("check", false, "exit 1 if any input would change, without writing files")
 	dir := flag.String("dir", ".", "starting directory for the TUI file picker")
 	flag.CommandLine.Parse(reorderArgs(os.Args[1:]))
 	if *showVersion {
@@ -192,8 +216,8 @@ func main() {
 		fmt.Fprintln(os.Stderr, "-flair requires -profile news-safe")
 		os.Exit(1)
 	}
-	if *toStdout && *inPlace || *toStdout && *outdir != "" || *inPlace && *outdir != "" {
-		fmt.Fprintln(os.Stderr, "-stdout, -in-place, and -o are mutually exclusive")
+	if err := validateOutputMode(*toStdout, *inPlace, *dryRun, *check, *outdir); err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 	lex, err := LoadLexicon(*lexPath)
@@ -208,6 +232,10 @@ func main() {
 	}
 
 	if flag.NArg() == 0 {
+		if *dryRun || *check {
+			fmt.Fprintln(os.Stderr, "-dry-run and -check require input files")
+			os.Exit(1)
+		}
 		runTUI(wizardifier, *dir, *profile == "news-safe", *flair)
 		return
 	}
@@ -232,7 +260,7 @@ func main() {
 
 	outputs := map[string]string{}
 	for _, source := range files {
-		if *toStdout || *inPlace || *outdir == "" {
+		if *toStdout || *inPlace || *dryRun || *check || *outdir == "" {
 			continue
 		}
 		out := filepath.Join(*outdir, outPath(source.Rel))
@@ -244,6 +272,7 @@ func main() {
 		outputs[key] = source.Path
 	}
 
+	checkChanged := false
 	for _, source := range files {
 		b, err := os.ReadFile(source.Path)
 		if err != nil {
@@ -264,6 +293,13 @@ func main() {
 		switch {
 		case *toStdout:
 			fmt.Print(result)
+		case *check:
+			if result != string(b) {
+				checkChanged = true
+				fmt.Println("would change:", source.Path)
+			}
+		case *dryRun:
+			fmt.Printf("would transmute: %s -> %s\n", source.Path, outPath(source.Path))
 		case *inPlace:
 			if err := safeWriteFile(source.Path, []byte(result), 0644); err != nil {
 				fmt.Fprintln(os.Stderr, "error:", err)
@@ -281,5 +317,8 @@ func main() {
 			}
 			fmt.Printf("transmuted: %s -> %s\n", source.Path, out)
 		}
+	}
+	if *check && checkChanged {
+		os.Exit(1)
 	}
 }
