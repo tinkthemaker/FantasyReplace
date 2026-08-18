@@ -57,7 +57,7 @@ updated together.
 ## 6. CLI and batch workflows
 
 - [ ] Support stdin and conventional stdout pipelines.
-- [ ] Add `--dry-run`, `--check`, and JSON reporting.
+- [x] Add `--dry-run` and `--check`; JSON reporting remains pending.
 - [ ] Add include/exclude globs and configurable recursion.
 - [ ] Continue batch jobs after per-file failures and print a final summary.
 - [ ] Add bounded parallel folder processing and progress reporting.

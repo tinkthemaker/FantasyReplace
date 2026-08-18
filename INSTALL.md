@@ -39,6 +39,7 @@ chmod +x wizardify-*
 wizardify -help
 wizardify -version
 wizardify sample-post.md -stdout
+wizardify sample-post.md -check
 ```
 
 ## Custom lexicons

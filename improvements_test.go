@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"sync"
 	"testing"
@@ -106,6 +107,40 @@ func TestNormalizeNewsSafeProfile(t *testing.T) {
 	}
 	if _, err := normalizeProfile("satire"); err == nil {
 		t.Fatal("invalid profile was accepted")
+	}
+}
+
+func TestValidateOutputMode(t *testing.T) {
+	valid := [][5]interface{}{
+		{false, false, false, false, ""},
+		{false, false, true, false, ""},
+		{false, false, false, true, ""},
+		{false, false, false, false, "out"},
+	}
+	for _, mode := range valid {
+		if err := validateOutputMode(mode[0].(bool), mode[1].(bool), mode[2].(bool), mode[3].(bool), mode[4].(string)); err != nil {
+			t.Errorf("valid mode rejected: %v: %v", mode, err)
+		}
+	}
+	invalid := [][5]interface{}{
+		{true, false, false, false, "out"},
+		{false, true, false, false, "out"},
+		{false, false, true, true, ""},
+		{false, false, true, false, "out"},
+		{false, false, false, true, "out"},
+	}
+	for _, mode := range invalid {
+		if err := validateOutputMode(mode[0].(bool), mode[1].(bool), mode[2].(bool), mode[3].(bool), mode[4].(string)); err == nil {
+			t.Errorf("invalid mode accepted: %v", mode)
+		}
+	}
+}
+
+func TestReorderArgsKeepsBooleanFlagsFromConsumingInputs(t *testing.T) {
+	got := reorderArgs([]string{"first.md", "-dry-run", "second.md", "-check"})
+	want := []string{"-dry-run", "-check", "first.md", "second.md"}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("reorderArgs = %#v, want %#v", got, want)
 	}
 }
 
